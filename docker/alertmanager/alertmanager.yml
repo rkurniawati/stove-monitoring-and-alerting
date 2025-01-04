@@ -1,0 +1,22 @@
+route:
+  group_wait: 30s
+  repeat_interval: 10m
+  receiver: email_receiver
+
+receivers:
+- name: email_receiver
+  email_configs:
+  - to: 'destination-email-here@gmail.com' # example email alert
+    from: 'sender-email-here@gmail.com'
+    smarthost: smtp.gmail.com:587
+    auth_username: 'sender-email-here@gmail.com'
+    auth_identity: 'sender-email-here@gmail.com'
+    auth_password: 'password'
+    send_resolved: true
+  - to: '4135579581@vtext.com' # example text alert
+    from: 'sender-email-here@gmail.com'
+    smarthost: smtp.gmail.com:587
+    auth_username: 'sender-email-here@gmail.com'
+    auth_identity: 'sender-email-here@gmail.com'
+    auth_password: 'password'
+    send_resolved: true

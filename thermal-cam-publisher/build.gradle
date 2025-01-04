@@ -1,0 +1,67 @@
+ plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id'com.google.protobuf' version '0.9.4'
+    id "com.diffplug.spotless" version "6.25.0"
+
+}
+
+group = 'org.gooddog'
+version = '0.0.1-SNAPSHOT'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://packages.confluent.io/maven"
+    }
+}
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat("1.17.0")
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    implementation group: 'org.apache.kafka', name: 'kafka-clients', version: '3.7.1'
+    implementation group: 'io.confluent', name: 'kafka-protobuf-serializer', version: '7.7.1'
+
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.25.3'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.25.3'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

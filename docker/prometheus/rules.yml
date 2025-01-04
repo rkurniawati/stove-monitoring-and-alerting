@@ -1,0 +1,75 @@
+groups:
+- name: thermal_cam
+  rules:
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="80000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="76000.0"}
+    labels:
+      le: 80
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="84000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="80000.0"}
+    labels:
+      le: 84
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="88000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="84000.0"}
+    labels:
+      le: 88
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="92000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="88000.0"}
+    labels:
+      le: 92
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="96000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="92000.0"}
+    labels:
+      le: 96
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="100000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="96000.0"}
+    labels:
+      le: 100
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="104000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="100000.0"}
+    labels:
+      le: 104
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="108000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="104000.0"}
+    labels:
+      le: 108
+  - record: calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative
+    expr: thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="112000.0"} - ignoring (le) thermalcam_heatmap_frameSummary_v2_pixels_bucket{application="publishHeatMap",le="108000.0"}
+    labels:
+      le: 112
+  - alert: Heat_Detected_On_Stove
+    expr: sum(calc:thermalcam_heatmap_v2_pixels_bucket:non_cummulative) > 2
+    for: 20m
+    labels:
+      severity: critical
+    annotations:
+      summary: Heat detected on stove for 20 minutes or longer
+  
+- name: node_exporter_alerts
+  rules:
+  - alert: Node down
+    expr: up{job="node-exporter"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      title: Node {{ $labels.instance }} is down
+      description: Failed to scrape {{ $labels.job }} on {{ $labels.instance }} for more than 5 minutes. Node seems down.
+  - alert: HostOutOfDiskSpace
+    expr: '((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host out of disk space (instance {{ $labels.instance }})
+      description: "Disk is almost full (< 10% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: HostDiskWillFillIn24Hours
+    expr: '((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes < 10 and ON (instance, device, mountpoint) predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs"}[1h], 24 * 3600) < 0 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) * on(instance) group_left (nodename) node_uname_info{nodename=~".+"}'
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host disk will fill in 24 hours (instance {{ $labels.instance }})
+      description: "Filesystem is predicted to run out of space within the next 24 hours at current write rate\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+

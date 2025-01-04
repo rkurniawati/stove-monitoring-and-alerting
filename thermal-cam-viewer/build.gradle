@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id'com.google.protobuf' version '0.9.4'
+    id "com.diffplug.spotless" version "6.25.0"
+
+}
+
+group = 'org.gooddog'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://packages.confluent.io/maven"
+    }
+
+}
+
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat("1.17.0")
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.25.3'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java-util', version: '3.25.3'
+    implementation group: 'org.apache.kafka', name: 'kafka-clients', version: '3.7.1'
+    implementation group: 'io.confluent', name: 'kafka-protobuf-serializer', version: '7.7.1'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    compileOnly 'org.projectlombok:lombok:1.18.34'
+    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    implementation 'com.twelvemonkeys.imageio:imageio-core:3.12.0'
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testCompileOnly 'org.projectlombok:lombok:1.18.34'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
