@@ -1,6 +1,6 @@
 # Stove Monitoring and Alerting Project
 
-This is the source code for the Stove Monitoring Project. More information can be found in this [presentation](https://docs.google.com/presentation/d/19l1EMLG5y4ll4vZ626hTbeaWi7G7apMHBoY5TA5GMVg/edit?usp=sharing).
+This is the source code for the Stove Monitoring Project. More information can be found in this [presentation](https://docs.google.com/presentation/d/e/2PACX-1vQIFKavVQjKR7zRES9MspUE8__-Zxw_jsz_CQLSpXys-Jc3RGGJDyXw5U4xZ6W9045wMJYRZfb8WsIG/pub?start=false&loop=false&delayms=3000).
 
 ## Requirements
 
